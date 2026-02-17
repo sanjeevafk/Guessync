@@ -18,7 +18,10 @@ const UserSchema = new mongoose.Schema({
   streak: { type: Number, default: 0 },
   fastestGuess: { type: Number, default: null }, // in seconds
   
-  matchHistory: [MatchSchema]
+  matchHistory: [MatchSchema],
+  
+  roomsCreated: { type: [String], default: [] }, // Relationship: User -> Rooms Created
+  roomsJoined: { type: [String], default: [] } // Relationship: User -> Rooms Joined
   
 }, { timestamps: true });
 

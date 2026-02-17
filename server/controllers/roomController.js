@@ -1,5 +1,6 @@
 import Room from "../models/Room.js";
 import Song from "../models/Song.js";
+import User from "../models/User.js";
 import { generateRoomCode } from "../utils/generateCode.js";
 import { getSpotifyAccessToken } from "../utils/getSpotifyAccessToken.js";
 import { getSongsFromSpotifyPlaylist } from "../utils/fillPlaylistFromSpotify.js";
@@ -47,6 +48,14 @@ settings: {
     
     console.log("Attempting to save new room...");
     await newRoom.save();
+    
+    // Update relationship: Add room to user's roomsCreated
+    await User.findOneAndUpdate(
+      { uid },
+      { $addToSet: { roomsCreated: code } },
+      { new: true }
+    );
+    
     console.log("Room saved to MongoDB successfully!");
     res.status(201).json({ message: "Room created", code });
   } catch (err) {
@@ -76,6 +85,13 @@ export const joinRoom = async (req, res) => {
 
     room.players.push({ uid, name, avatar });
     await room.save();
+
+    // Update relationship: Add room to user's roomsJoined
+    await User.findOneAndUpdate(
+      { uid },
+      { $addToSet: { roomsJoined: code } },
+      { new: true }
+    );
 
     console.log("Player added to room and saved.");
     res.json({ message: "Joined room", room });
